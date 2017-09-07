@@ -1,8 +1,10 @@
-# map-editor-batch
+# Map Editor
+
+**Warining!** current version (6.2a) may be unstable with some maps (specially spr, pbc formats). Make sure to make backups of your work!
 
 ## What this is
 Map Editor is a tool for maps in ANSI Art for videogames programed in batch files using Seta:GPU Engine.
-Map Editor has various options for make easy the work.
+Map Editor has various options to make easy the work.
  
 
 ## Features

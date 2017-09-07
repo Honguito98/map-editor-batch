@@ -1,0 +1,107 @@
+:	PbcToMpe.dll is part of Map Editor.
+:	
+:	Map Editor is free software: you can redistribute it and/or modify
+:	it under the terms of the GNU General Public License as published by
+:	the Free Software Foundation, either version 3 of the License, or
+:	(at your option) any later version.
+:	
+:	Map Editor is distributed in the hope that it will be useful,
+:	but WITHOUT ANY WARRANTY; without even the implied warranty of
+:	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:	GNU General Public License for more details.
+:	
+:	You should have received a copy of the GNU General Public License
+:	along with Map Editor.  If not, see <http://www.gnu.org/licenses/>.
+
+	:: PbcToMpe Library - Developed By Honguito98 ::
+	::! This Cannot Run in mode Standalone !::
+	:: Usage: PbcToMpe.dll FILE ::
+	:: Data are returned as variables called 'Line[#]' from 1 to ??? ::
+	:: This requires the: setlocal enabledelayedexpansion enableextensions ::
+
+	::SetLocal
+	Set "Head_pbc=:: .::Paint Batch Colous-Program created by Honguito98::."
+	Set Tmp_=
+	For /l %%x in (1,1,80) Do Set "Tmp_=!Tmp_!00 \FF "
+	For /l %%Y In (1,1,27) Do Set "Lm[%%Y]=!Tmp_!"
+	Find "!Head_pbc!" "%~1">Nul||Exit/b 2
+	Set Data=0
+	:::::
+	Set/a [Lines]=0,[Count]=0
+	For /F %%d in ('Type "%~1"^|Find /v /c ""') Do Set [lines]=%%d
+	If ![Lines]! Geq 1000 If ![Lines]! Leq 9999 Set Bss=!Bs!!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 100 If ![Lines]! Leq 999 Set Bss=!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 10 If ![Lines]! Leq 99 Set Bss=!Bs!!Bs!
+	If ![Lines]! Geq 1 If ![Lines]! Leq 9 Set Bss=!Bs!
+	Set Bss=!Bss!!Bs!!Bs!
+	Call Lib\Status.bat "%~1"
+	:::::
+	For /F "Eol=@ Delims=" %%a in ('Type "%~1"') Do (
+	Set/a Data+=1
+	If "!Data!" Neq "5" Set "Dat_!Data!=%%~a"
+	If "!Data!" Equ "4" Call :Disassembly
+	If "!Data!" Equ "5" Set Data=0
+
+	Set/a [Count]+=1
+	If ![Count]! Equ 1000 Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 100  Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 10  Set Bss=!Bss!!Bs!
+	<Nul Set/p =![Count]!/![Lines]!!Bss!
+)
+	Set/a Map.X=80,Map.Y=27
+	For /l %%Y in (1,1,27) Do Set "Line[%%Y]=!Lm[%%Y]!"&Set Lm[%%Y]=
+	For %%a in (Dat_1 Dat_2 Dat_3 Dat_4 Tmp_ Chr Y_ X_ X Y Head_pbc Count) Do Set %%a=
+	Exit/b 0
+:Disassembly
+	If "!Dat_3!" Equ ";" Goto :Eof
+	If "!Dat_3!" Equ "; " Goto :Eof
+	Set "Dat_3=!Dat_3:,=.!"
+	Cmd /cexit !Dat_1!
+	Set Dat_1=!=Exitcode:~7!
+	Cmd /cexit !Dat_2!
+	Set Dat_2=!=Exitcode:~7!
+	::If "!Dat_2!" Equ "8" Set Dat_2=0
+	::If "!Dat_2!" Equ "9" Set Dat_2=1
+	If "!Dat_4:~0,1!" Neq "$" ( Call :Disassembly2 & Goto :Eof )
+	
+	For /F "Tokens=1,2,* Skip=2" %%x in ('Find "!Dat_4!" "Lib\CharSet.db"') Do Set "Chr=%%y"
+	For %%# in (!Dat_3!) Do (
+	Call :Remplace__ "%%#" !Dat_1! !Dat_2!
+	)
+	Goto :Eof
+:Remplace__
+	For /F "Tokens=1-2 Delims=." %%x in ("%~1") Do (
+		Set X_=%%x
+		Set Y_=%%y
+		If "!X_!" Leq "09" Set "X_=!X_:~1,1!"
+		If "!Y_!" Leq "09" Set "Y_=!Y_:~1,1!"
+		Set/a "X=(X_*7)-7,_X=(X_*7),Y=Y_"
+		)
+	Set "Lm[!Y!]=!Lm[%Y%]:~0,%X%!%3%2 !Chr! !Lm[%Y%]:~%_X%!"
+	Goto :Eof
+:Disassembly2
+	Set "Tmp_=!Dat_4!"
+	Set Chr=
+	Set Count=0
+	:asm
+	Set "Tmp_=!Tmp_:~1!"
+	For /F "Tokens=1,2,* Skip=2" %%x in ('Find ">!Dat_4:~%Count%,1!<" "Lib\CharSet.db"') Do (
+		Set "Chr_=!Dat_2!!Dat_1! %%y "
+	)
+	Set "Chr=!Chr!!Chr_!"
+	::Echo;!Dat_4:~%count%,1!
+	Set/a Count+=1
+	If "!Tmp_!" Neq "" Goto :asm
+	For %%# in (!Dat_3!) Do Call :Remplace____ "%%#"
+	Goto :Eof
+	
+	:Remplace____
+	For /F "Tokens=1-2 Delims=." %%x in ("%~1") Do (
+		Set X_=%%x
+		Set Y_=%%y
+		If "!X_!" Leq "09" Set "X_=!X_:~1,1!"
+		If "!Y_!" Leq "09" Set "Y_=!Y_:~1,1!"
+		Set/a "X=(X_*7),_X=(X_*7)+(!Count!*7),Y=Y_"
+		)
+	Set "Lm[!Y!]=!Lm[%Y%]:~0,%X%!!Chr!!Lm[%Y%]:~%_X%!"
+	Goto :Eof

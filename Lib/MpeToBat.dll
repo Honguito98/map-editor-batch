@@ -1,0 +1,81 @@
+:	MpeToBat.dll is part of Map Editor.
+:	
+:	Map Editor is free software: you can redistribute it and/or modify
+:	it under the terms of the GNU General Public License as published by
+:	the Free Software Foundation, either version 3 of the License, or
+:	(at your option) any later version.
+:	
+:	Map Editor is distributed in the hope that it will be useful,
+:	but WITHOUT ANY WARRANTY; without even the implied warranty of
+:	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:	GNU General Public License for more details.
+:	
+:	You should have received a copy of the GNU General Public License
+:	along with Map Editor.  If not, see <http://www.gnu.org/licenses/>.
+	
+	:: MpeToBat Library - Developed By Honguito98 ::
+	::! This Cannot Run in mode Standalone !::
+	:: Usage: MpeToBat.dll OUTFILE X1,X2 Y1,Y2::
+	:: This requires the: setlocal enabledelayedexpansion enableextensions ::
+	::: Some parts of code are from DosTips.com  :::
+	:: std sze: X=67,Y=17
+	Set "Out=%~1"
+	Set/a "X1=%2*7,X2=(%3-%2)*7,Y1=%4,Y2=%5" 2>Nul
+	Del "!Out!" >Nul 2>&1
+	::::::::::
+	Set/a [Lines]=!Y2!-!Y1!,[Count]=0
+	If ![Lines]! Geq 1000 If ![Lines]! Leq 9999 Set Bss=!Bs!!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 100 If ![Lines]! Leq 999 Set Bss=!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 10 If ![Lines]! Leq 99 Set Bss=!Bs!!Bs!
+	If ![Lines]! Geq 1 If ![Lines]! Leq 9 Set Bss=!Bs!
+	Set Bss=!Bss!!Bs!!Bs!
+	Call Lib\Status.bat "%~1" l
+	::::::::::
+	For %%T in (!ObjFile!) Do set "Tmp_=%%~nT"
+	For %%a in (
+	"@Echo Off"
+	"Title !Tmp_! - Converted by Map Editor"
+	"::Created With Batch Paint v 2 :: Converted By Map Editor"
+	"::SCOT Team 2009"
+	"(") Do Echo.%%~a>>"!Out!"
+
+	(For /L %%# in (!Y1!,1,!Y2!) Do Call :ChgChr_ %%#) 4>> "!Out!"
+	For %%b in (
+	"Echo.Q"
+	")>$%%TMP%%\TMP.TXT$& Debug <$%%TMP%%\TMP.TXT$>nul 2>&1"
+	"Pause>nul"
+	"Goto :Eof") Do (
+		Set "Tmp_=%%~b"
+		Set Tmp_=!Tmp_:$="!
+		Echo;!Tmp_!>>"!Out!"
+	)
+	Set Tmp_=
+	Exit/b 0
+
+:ChgChr_
+	Set/a Count=0,Count_=0
+	Set "Tmp_=!Line[%1]:~%X1%,%X2%!"
+	:::::
+	If ![Count]! Equ 1000 Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 100  Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 10  Set Bss=!Bss!!Bs!
+	<Nul Set/p =![Count]!/![Lines]!!Bss!
+	Set/a [Count]+=1
+	::::
+	:ChgChr__
+	Set/a "Dec=(%1*160)+(Count_+2)*2"
+	set "hex="
+	set "Map_=0123456789ABCDEF"
+	For /L %%N in (1,1,8) Do (
+		Set /a "D=Dec&15,Dec>>=4"
+		For %%D in (!D!) Do Set "Hex=!Map_:~%%D,1!!Hex!"
+	)
+	For /F "Delims=0" %%H in ("%Hex%") Do Set "Hex=%%H"
+
+	For /F "Tokens=1-2" %%a in ("!Tmp_:~%Count%,7!") Do (
+	For /F "Tokens=2,* Skip=1" %%x in ('Find /i "%%b" Lib\CharSet.db') Do Set "Chr=%%y"
+	Echo;Echo.EB800:!Hex! "!Chr:~1,1!" %%a>&4
+	)
+	Set/a Count+=7,Count_+=1
+	If "!Tmp_:~%Count%,7!" Neq "" Goto :ChgChr__
+	Goto :Eof

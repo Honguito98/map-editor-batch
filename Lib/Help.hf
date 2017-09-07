@@ -1,0 +1,317 @@
+                                           
+        Map Editor Help File               
+       Developed By Honguito98             
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ    
+Contents:                                  
+1. What this it?                           
+2. Basics things                           
+3. Tools                                   
+4. Tricks                                  
+5. Thanks to / about                       
+                                           
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ  
+1. What this it?                           
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ  
+This is a tiny tool for make ANSI Art      
+for develop batch games, make a gif,       
+etc; but convertible into various          
+formats like ANSI sequences (.pic),        
+Colous.exe Dat File (.pbc), Batch Paint    
+V1 & V2 Files (.bat), ANSI/ASCII file      
+without format (.rtf), Regular expresions  
+file (main format [.mpe]).                 
+                                           
+Can support all the formats said for       
+open and save                              
+                                           
+This program is built-with Seta-GPU engine 
+coloured version                           
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ  
+2. Basic things                            
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ  
+                                           
+2.1 User interface                         
+                                           
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ                           
+[] Map Editor.. <--  Window title        
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ                           
+ Open  Save  New <--  File options         
+ßßßßßßßßßßßßßßßß                           
+ÚÄÄÄSpritesÄÄÄ¿  <--- This part is for          
+³?????³       select some
+³???³       sprites and use
+³›Ÿ¨©ª«¬³       as pencil            
+³­®¯°±²³´¸¹º»¼³                                
+³½¾¿ÀÁÂÃÄÅÈÉÊË³                                
+³ÌÍÎÏĞØÙÚÛÜßæç³                                
+³èîïğñòó.õö÷øù³                                
+³úûüış #$%*-_~³                                
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ                                
+ÚÄÄÄColoursÄÄÄ¿  <--- You can select           
+³ÿÿBackgroundÿ³       and combine              
+³ÿÿÛ²Û²Û²Û²ÿÿÿ³       two colours for          
+³ÿÿ²Û²Û²Û²Ûÿÿÿ³       make new colours         
+³ÿÿForegroundÿ³                                
+³ÿÿÛ²Û²Û²Û²ÿÿÿ³                                
+³ÿÿ²Û²Û²Û²Ûÿÿÿ³                                
+³ÿÿPencil:±ÿÿÿ³<--- This pixel show the        
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ     pencil                     
+ÚÄÄÄÄMoveÄÄÄÄÄ¿                                
+³ÿÿÿÿ[]ÿÿÿÿÿÿ³ <- You can displace the     
+³ÿÿ[?]ÿ[?]ÿÿÿÿ³    map if is very bigger    
+³ÿÿÿÿ[]ÿÿÿ[]³ <- This activates the       
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ    displace with the           
+                   arrow keys                  
+                                               
+[Row: 24/30    Col: 0/91  <-This show          
+                            the actual         
+                            status             
+                                               
+2.2 Mouse buttons                              
+                                               
+Right click: Opens a menu with options         
+             see below...                      
+                                               
+Left click:  Paint with the sprite             
+             selected                          
+                                               
+2.3 Use the area select                        
+                                               
+ When the Copy Area or any forms are           
+ active, you can select the size by            
+ holding left click on any area desired        
+ and unhold for make a selection               
+ rectangle, example:                           
+                                               
+ [1]:                                          
+ÚÄÄÄÄÄÄÄÄÄÄÄÄ                                  
+³°#°±±±±°±±±±                                  
+³±°±±±±°°°±±                               
+³±±±±±±°±±±±                               
+³±±±±±±±±±±±                               
+³±±±±±±±±±±±±                                  
+                                               
+ [2]:                                          
+ÚÄÄÄÄÄÄÄÄÄÄÄÄ                                  
+³°#°±±±±°±±±±                                  
+³±°±±±±°°°±±                               
+³±±±±±±°±±±±                               
+³±±±±±±±#±±±                               
+³±±±±±±±±±±±±                                  
+ Were:                                         
+ #'s = selected area                           
+                                               
+ [Note]: you cannot modify the first           
+ cursor # (first picture), if you want         
+ modify this, press Right Click on any         
+ draw area and select 'Retry'                  
+                                               
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ        
+3. Tools                                       
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ        
+                                               
+3.1 Right click button                         
+                                               
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+³ş        Select An Option          ş³         
+³                                    ³         
+³           [Paste Here]             ³         
+³                                    ³         
+³           [Copy Pixel]             ³         
+³                                    ³         
+³           [Copy Color]             ³         
+³                                    ³         
+³           [Copy Brush]             ³         
+³                                    ³         
+³ş          [  Cancel  ]            ş³         
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+                                               
+ş Paste Here: Paste the clipboard content      
+  to the pixel clicked                         
+                                               
+ş Copy Pixel: Copy the sprite and colours      
+  of the pixel clicked                         
+                                               
+ş Copy Color: Copy the colour of the pixel     
+  clicked                                      
+                                               
+ş Copy Brush: Copy the sprite of the pixel     
+  clicked                                      
+                                               
+                                               
+3.2  Tool bar                                  
+                                               
+                                               
+³ Forms: [__]  [ÛÛ]                            
+          ^^     ^^                              
+          |     |                              
+          1     2                              
+                                               
+³ Misc: [#] [T] [O] [6] [Ÿ] [?]                
+         ^^   ^^   ^^   ^^   ^^   ^^                 
+         |   |   |   |   |   |                 
+         3   4   5   6   7   8                 
+                                               
+                                               
+ Forms:                                    
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ     
+[1]. Rectangle margins:                        
+                                               
+  Draw a rectangle margins with mark the       
+  area to apply, then is ready, press          
+  Right click for options.                     
+  If you need re-try to draw the rectangle     
+  press Right click and select 'Retry'         
+                                               
+[2]. Filled Rectangle:                         
+                                               
+  Draw a filled rectangle with mark the        
+  area. then is ready, press                   
+  Right click for options.                     
+  If you need re-try to draw the rectangle     
+  press Right click and select 'Retry'         
+                                               
+ Misc:                                     
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ    
+[3]. Eraser:                                   
+                                               
+  Activate the eraser On/Off                   
+                                               
+[4]. Text Factory                              
+                                               
+  Inserts a tiny text coloured:                
+                                               
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿     
+³           Text Factory                 ³     
+³ Write the word with click on letter    ³     
+³                                        ³     
+³ [                                  ]   ³     
+³  oooooooooooooooooooooooooooooooooo <ÄÄÅÄ¿   
+³ ÚÄÄÄÄÄÄÄÄÄÄLettersÄÄÄÄÄÄÄÄÄ¿           ³ ³   
+³ ³abcdefghijklmnopqrstuvwxyz³[BackSpace]³ ³   
+³ ³-"#$%&'()*+,-./ 0123456789³           ³ ³   
+³ ³:;<=>?@[\]^^_`{|}~        ³[ Del All ]³ ³   
+³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ           ³ ³   
+³ ÚÄÄÄÄColoursÄÄÄÄÄ¿ (o) Bg   [Uppercase]³ ³   
+³ ³ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ³ (o) Fg              ³ ³   
+³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ                     ³ ³   
+³                                        ³ ³   
+³  [Accpet]  [Cancel]                    ³ ³   
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ ³   
+                                           ³   
+ş Fg: Sets the ForeGround color            ³   
+ş Bg: Sets the BackGround color            ³   
+ş Backspace: Delete the previous character ³   
+ş Del All : Delete all the word            ³   
+ş "o"'s: Set the actual character to edit  Ù   
+  the colours                                  
+                                               
+[Note 1]: When have you text inserter active,  
+        cannot use the rectangle margins       
+        except when active you the eraser      
+        can you use the rectangle margins      
+                                               
+[Note 2]: If you want deactivate the text      
+         inserter, use 'Del All' button        
+         to restore the pencil or click        
+         in any sprite area                    
+                                               
+[5]. Copy area                                 
+                                               
+  Selects the area with the mouse click        
+  and copy the contents to clipboard,          
+  then is ready, press Right click for         
+  options. If you need re-try to select        
+  the area, press Right click and select       
+  'Retry'                                      
+                                               
+[6]. Export as...                              
+                                               
+  Selects the format to save the file and the  
+  size of map to save                          
+                                               
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+³ş        Select An Option          ş³         
+³                                    ³         
+³    [      Save full map       ]    ³         
+³                                    ³         
+³    [   Select area to save    ]    ³         
+³                                    ³         
+³    [Save with recommended size]    ³         
+³                                    ³         
+³                                    ³         
+³                                    ³         
+³ş            [Cancel]              ş³         
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+                                               
+ş Save full map: save full the map, this       
+  metod is recommended only to use for save    
+  complete maps and use for game engines,  
+  the cons is, cannot be open correctly
+  for others programs including this      
+                                               
+ş Select area to save: saves the area 
+  selected with a custom size, this 
+  metod is recommended only for use in
+  game engines, cons are, cannot be
+  open correctly for others programs 
+  including this, when the size selected       
+  is more larger that the recommended
+  size.                                    
+                                               
+ş Save with recommended size: save the map     
+  with a size recommended for use with
+  others programs including this.               
+                                               
+[7]. Change font size                          
+                                               
+  Changes the font size of all screen, are     
+  5 sizes to select                            
+                                               
+[8]. Help                                      
+                                               
+  Show this help                               
+                                               
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ        
+4. Tricks                                      
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ        
+                                               
+[1]. Delete with rectangle margins:            
+                                               
+    Click [#] on toolbar for activate          
+    the eraser, then click in any form         
+    [__] or [ÛÛ]                               
+                                               
+                                               
+[2]. Copy and paste a selected area on         
+     the map:                                  
+                                               
+     Click [O] on toolbar for activate         
+     the area to copy, then right click        
+     on any area desired, and finally          
+     click on the option 'Paste Here'          
+                                               
+                                               
+[3]. If the program speed is slow down,        
+     try save the map, this delete unused      
+     variables                                 
+                                               
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ        
+5. Thanks to / about                           
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ        
+                                               
+ Many thanks to CMontiers, for create the  
+  Bg.exe tool for make batch games,            
+  put more colours in batch, etc            
+                                               
+ Thanks to DosTips for create some         
+  converters from a text to another            
+                                            
+ My experience for trying to make          
+  various useful programs                      
+                                               
+                                               
+ About:                                    
+                                               
+ Map Editor                                    
+ Copyright (C) 2013,2014  Honguito98           

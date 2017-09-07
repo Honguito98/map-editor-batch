@@ -1,0 +1,382 @@
+@Echo Off
+:	SprDecoder is part of Map Editor.
+:	
+:	Map Editor is free software: you can redistribute it and/or modify
+:	it under the terms of the GNU General Public License as published by
+:	the Free Software Foundation, either version 3 of the License, or
+:	(at your option) any later version.
+:	
+:	Map Editor is distributed in the hope that it will be useful,
+:	but WITHOUT ANY WARRANTY; without even the implied warranty of
+:	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:	GNU General Public License for more details.
+:	
+:	You should have received a copy of the GNU General Public License
+:	along with Map Editor.  If not, see <http://www.gnu.org/licenses/>.
+	SetLocal EnableExtensions EnableDelayedExpansion
+	:: Load ChrTable
+	For /F "Tokens=1-2 Delims== " %%X in ('FindStr "^=" "%~0"') Do (
+		Set UChr[%%Y]=%%X
+	)
+	Set "ExtFile=%~1"
+	If Not Defined ExtFile (
+		For %%T in (
+			"+===============================+"
+			"ÝSpr Tool Decoder               Ý"
+			"ÝCoded By Honguito98            Ý"
+			"Ý Rev. 0.6  27-JUL-14 @ 8:05PM  Ý"
+			"+===============================+"
+			""
+			"Converts any .spr file (Unicode and Little Endian only)"
+			"to standar format for old Bg Sprite/Print"
+			""
+		) Do Echo;%%~T
+		Set /p File=File:
+	) Else (
+		Call Lib\Status.bat "%~1"
+		Set "File=%~1"
+	)
+	Set Pad=X
+	Del "!Tmp!\Tmp.dat" >Nul 2>&1
+	For %%F in (!File!) Do (
+		Set /a "Size=%%~zF - 1"
+		For /L %%# in (1,1,!Size!) Do <Nul Set /p =X
+	) > "!Tmp!\Tmp.dat"
+
+	:: This set on 'load without transparency' option
+	Set UChr[0000]=FF
+
+	%== Reading The File As Big Endian ==%
+	Set /a "Ln=0, Ln_=0, Map.Y_=1, Map.X_=-1"
+	For /F "Skip=1 Tokens=2 Delims= " %%D in ('Fc /B !File! "!Tmp!\Tmp.dat"') Do (
+		Set /a Ln+=1
+		If !Ln! Equ 1 Set /a "Map.X=0x%%D, Map.X_=0x%%D + 1"
+		If !Ln! Equ 3 Set /a "Map.Y=0x%%D, Map.Y_=0x%%D"
+		If !Ln! Geq 5 (
+			Set /a Ln_+=1
+			If !Ln_! Equ 1 Set Nib=%%D
+			If !Ln_! Equ 2 Set Nib=%%D!Nib!
+			If !Ln_! Equ 3 Set Cl=%%D
+			If !Ln_! Equ 4 (
+				%== Starting To Decode Values, And Re-write Data As Little Endian ==%
+				Set /a "Ln_=0, Map.X_-=1"
+				If !Map.X_! Leq 0 (
+					rem For %%Y in (!Map.Y_!) Do Set "G[%%Y]=!G[%%Y]:~0,-1!\n"
+					Set /a Map.Y_-=1,Map.X_=!Map.X!
+				)
+				For /F "Tokens=1-2" %%Y in ("!Map.Y_! !Nib!") Do (
+					Set "G[%%Y]=!G[%%Y]!!Cl! \!UChr[%%Z]! "
+				)
+			)
+		)
+	)
+	For %%N in (!File!) Do Set "Name=%%~nN"
+	Echo;Map Editor - Developed By By Honguito98 - Only Use To Paste>!Name!.txt
+	Echo;*\ SizeData: !Map.X!x!Map.Y! *\>>!Name!.txt
+	For /L %%# in (!Map.Y!,-1,1) Do Echo;!G[%%#]!>>!Name!.txt
+
+	EndLocal & Set "Name=%Name%"
+	Set "ExtFile=%~1"
+	If Defined ExtFile (
+		Set Cnt=0
+		For /F "Skip=2 Tokens=3,4 Delims=Xx " %%D in ('Find "SizeData" "!Name!.txt"') Do Set /a "Map.X=%%D, Map.Y=%%E"
+		For /F "Skip=2 Delims=" %%D in (!Name!.txt) Do (
+			Set /a Cnt+=1
+			Set Line[!Cnt!]=%%D
+		)
+		Del "!Name!.txt" >Nul 2>&1
+	)
+	Del "!Tmp!\Tmp.dat" >Nul 2>&1
+	If Not Defined ExtFile (
+		Echo;Done
+		Pause
+	)
+	Goto :Eof
+
+;Unicode To Ms-Dos Ascii By Honguito98
+;Ascii HEX Unicode HEX
+=00 0000 : null
+=01 263A : white smile
+=02 263B : black smile
+=03 2665 : heart
+=04 2666 : diammond
+=05 2663 : clover
+=06 2660 : spades
+=07 2022 : big dot
+=08 25D8 : negative box w/ circle
+=09 25CB : white circle
+=0A 25D9 : black circle
+=0B 2642 : sign man
+=0C 2640 : sign woman
+=0D 266A : quaver
+=0E 266B : tied eighth
+=0F 263C : sun
+=10 25C4 : left pointer
+=11 25BA : right pointer
+=12 2195 : down-up arrow
+=13 203C : double exclamation sign
+=14 0014 : ? device control 4
+=15 0015 : ? negative acknowledge
+=16 25AC : thin black bar
+=17 21A8 : down-up arrow with base
+=18 2191 : up arrow
+=19 2193 : down arrow
+=1A 2192 : right arrow
+=1B 2190 : left arrow
+=1C 221F : right angle
+=1D 2194 : left-right arrow
+=1E 25B2 : up pointer
+=1F 25BC : down pointer
+=20 0020
+=21 0021
+=22 0022
+=23 0023
+=24 0024
+=25 0025
+=26 0026
+=27 0027
+=28 0028
+=29 0029
+=2A 002A
+=2B 002B
+=2C 002C
+=2D 002D
+=2E 002E
+=2F 002F
+=30 0030
+=31 0031
+=32 0032
+=33 0033
+=34 0034
+=35 0035
+=36 0036
+=37 0037
+=38 0038
+=39 0039
+=3A 003A
+=3B 003B
+=3C 003C
+=3D 003D
+=3E 003E
+=3F 003F
+=40 0040
+=41 0041
+=42 0042
+=43 0043
+=44 0044
+=45 0045
+=46 0046
+=47 0047
+=48 0048
+=49 0049
+=4A 004A
+=4B 004B
+=4C 004C
+=4D 004D
+=4E 004E
+=4F 004F
+=50 0050
+=51 0051
+=52 0052
+=53 0053
+=54 0054
+=55 0055
+=56 0056
+=57 0057
+=58 0058
+=59 0059
+=5A 005A
+=5B 005B
+=5C 005C
+=5D 005D
+=5E 005E
+=5F 005F
+=60 0060
+=61 0061
+=62 0062
+=63 0063
+=64 0064
+=65 0065
+=66 0066
+=67 0067
+=68 0068
+=69 0069
+=6A 006A
+=6B 006B
+=6C 006C
+=6D 006D
+=6E 006E
+=6F 006F
+=70 0070
+=71 0071
+=72 0072
+=73 0073
+=74 0074
+=75 0075
+=76 0076
+=77 0077
+=78 0078
+=79 0079
+=7A 007A
+=7B 007B
+=7C 007C
+=7D 007D
+=7E 007E
+=7F 007F
+=80 00C7 : latin capital letter c with cedilla
+=81 00FC : latin small letter u with diaeresis
+=82 00E9 : latin small letter e with acute
+=83 00E2 : latin small letter a with circumflex
+=84 00E4 : latin small letter a with diaeresis
+=85 00E0 : latin small letter a with grave
+=86 00E5 : latin small letter a with ring above
+=87 00E7 : latin small letter c with cedilla
+=88 00EA : latin small letter e with circumflex
+=89 00EB : latin small letter e with diaeresis
+=8A 00E8 : latin small letter e with grave
+=8B 00EF : latin small letter i with diaeresis
+=8C 00EE : latin small letter i with circumflex
+=8D 00EC : latin small letter i with grave
+=8E 00C4 : latin capital letter a with diaeresis
+=8F 00C5 : latin capital letter a with ring above
+=90 00C9 : latin capital letter e with acute
+=91 00E6 : latin small ligature ae
+=92 00C6 : latin capital ligature ae
+=93 00F4 : latin small letter o with circumflex
+=94 00F6 : latin small letter o with diaeresis
+=95 00F2 : latin small letter o with grave
+=96 00FB : latin small letter u with circumflex
+=97 00F9 : latin small letter u with grave
+=98 00FF : latin small letter y with diaeresis
+=99 00D6 : latin capital letter o with diaeresis
+=9A 00DC : latin capital letter u with diaeresis
+=9B 00A2 : cent sign
+=9C 00A3 : pound sign
+=9D 00A5 : yen sign
+=9E 20A7 : peseta sign
+=9F 0192 : latin small letter f with hook
+=A0 00E1 : latin small letter a with acute
+=A1 00ED : latin small letter i with acute
+=A2 00F3 : latin small letter o with acute
+=A3 00FA : latin small letter u with acute
+=A4 00F1 : latin small letter n with tilde
+=A5 00D1 : latin capital letter n with tilde
+=A6 00AA : feminine ordinal indicator
+=A7 00BA : masculine ordinal indicator
+=A8 00BF : inverted question mark
+=A9 2310 : reversed not sign
+=AA 00AC : not sign
+=AB 00BD : vulgar fraction one half
+=AC 00BC : vulgar fraction one quarter
+=AD 00A1 : inverted exclamation mark
+=AE 00AB : left-pointing double angle quotation mark
+=AF 00BB : right-pointing double angle quotation mark
+=B0 2591 : light shade
+=B1 2592 : medium shade
+=B2 2593 : dark shade
+=B3 2502 : box drawings light vertical
+=B4 2524 : box drawings light vertical and left
+=B5 2561 : box drawings vertical single and left double
+=B6 2562 : box drawings vertical double and left single
+=B7 2556 : box drawings down double and left single
+=B8 2555 : box drawings down single and left double
+=B9 2563 : box drawings double vertical and left
+=BA 2551 : box drawings double vertical
+=BB 2557 : box drawings double down and left
+=BC 255D : box drawings double up and left
+=BD 255C : box drawings up double and left single
+=BE 255B : box drawings up single and left double
+=BF 2510 : box drawings light down and left
+=C0 2514 : box drawings light up and right
+=C1 2534 : box drawings light up and horizontal
+=C2 252C : box drawings light down and horizontal
+=C3 251C : box drawings light vertical and right
+=C4 2500 : box drawings light horizontal
+=C5 253C : box drawings light vertical and horizontal
+=C6 255E : box drawings vertical single and right double
+=C7 255F : box drawings vertical double and right single
+=C8 255A : box drawings double up and right
+=C9 2554 : box drawings double down and right
+=CA 2569 : box drawings double up and horizontal
+=CB 2566 : box drawings double down and horizontal
+=CC 2560 : box drawings double vertical and right
+=CD 2550 : box drawings double horizontal
+=CE 256C : box drawings double vertical and horizontal
+=CF 00A4 : -money sign-
+=D0 00F0 : box drawings up double and horizontal single
+=D1 2564 : box drawings down single and horizontal double
+=D2 2565 : box drawings down double and horizontal single
+=D3 2559 : box drawings up double and right single
+=D4 2558 : box drawings up single and right double
+=D5 2552 : box drawings down single and right double
+=D6 2553 : box drawings down double and right single
+=D7 256B : box drawings vertical double and horizontal single
+=D8 256A : box drawings vertical single and horizontal double
+=D9 2518 : box drawings light up and left
+=DA 250C : box drawings light down and right
+=DB 2588 : full block
+=DC 2584 : lower half block
+=DD 258C : left half block
+=DE 2590 : right half block
+=DF 2580 : upper half block
+=E0 03B1 : greek small letter alpha
+=E1 00DF : latin small letter sharp s
+=E2 0393 : greek capital letter gamma
+=E3 03C0 : greek small letter pi
+=E4 03A3 : greek capital letter sigma
+=E5 03C3 : greek small letter sigma
+=E6 00B5 : micro sign
+=E7 03C4 : greek small letter tau
+=E8 03A6 : greek capital letter phi
+=E9 0398 : greek capital letter theta
+=EA 03A9 : greek capital letter omega
+=EB 03B4 : greek small letter delta
+=EC 221E : infinity
+=ED 03C6 : greek small letter phi
+=EE 03B5 : greek small letter epsilon
+=EF 2229 : intersection
+=F0 00F0 : identical to
+=F1 00B1 : plus-minus sign
+=F2 2265 : greater-than or equal to
+=F3 2264 : less-than or equal to
+=F4 2320 : top half integral
+=F5 00FF : bottom half integral
+=F6 00F7 : division sign
+=F7 2248 : almost equal to
+=F8 00B0 : degree sign
+=F9 2219 : bullet operator
+=FA 00B7 : middle dot
+=FB 221A : square root
+=FC 207F : superscript latin small letter n
+=FD 00B2 : superscript two
+=FE 25A0 : black square
+=FF 00A0 : no-break space
+	
+;;;Unicode To Ms-Dos Ascii By Honguito98 - old rev
+;;;Ascii HEX Unicode HEX
+;;=00 0000 : null
+;;=01 263A : white smile
+;;=02 263B : black smile
+;;=03 2665 : heart
+;;=04 2666 : diammond
+;;=05 2663 : clover
+;;=06 2660 : spades
+;;=07 2022 : big dot
+;;=08 25D8 : negative box w/ circle
+;;=0E 266B : tied eighth
+;;=0F 263C : sun
+;;=11 25BA : right pointer
+;;=10 25C4 : left pointer
+;;=1E 25B2 : up pointer
+;;=1F 25BC : down pointer
+;;=5F 005F : low line
+;;=B0 2591 : light shade
+;;=B1 2592 : medium shade
+;;=B2 2593 : dark shade
+;;=DB 2588 : full block
+;;=DC 2584 : lower half block
+;;=DD 258C : left half block
+;;=DE 2590 : right half block
+;;=DF 2580 : upper half block
+;;=FE 25A0 : black square
+;;=FF 00A0 : no-break space

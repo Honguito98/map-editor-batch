@@ -1,0 +1,150 @@
+:	PicToMpe.dll is part of Map Editor.
+:	
+:	Map Editor is free software: you can redistribute it and/or modify
+:	it under the terms of the GNU General Public License as published by
+:	the Free Software Foundation, either version 3 of the License, or
+:	(at your option) any later version.
+:	
+:	Map Editor is distributed in the hope that it will be useful,
+:	but WITHOUT ANY WARRANTY; without even the implied warranty of
+:	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:	GNU General Public License for more details.
+:	
+:	You should have received a copy of the GNU General Public License
+:	along with Map Editor.  If not, see <http://www.gnu.org/licenses/>.
+
+	:: PicToMpe Library - Developed By Honguito98 ::
+	::! This Cannot Run in mode Standalone !::
+	:: Usage: PicToMpe.dll FILE ::
+	:: Data are returned as variables called 'Line[#]' from 1 to ??? ::
+	:: This requires the: setlocal enabledelayedexpansion enableextensions ::
+
+	Set Head_pic=Pic Editor, Developed By Honguito98, 2013 - ANSI Color Sequences File
+	Find "!Head_pic!" "%~1">Nul||Exit/b 2
+	Call :GetLng "%~1"
+	For /l %%x in (1,1,!LongX!) Do Set "Tmp_=!Tmp_!00 \FF "
+	For /l %%Y In (1,1,23) Do Set "Lm[%%Y]=!Tmp_!"
+	Set Y=1
+	:::::
+	Set/a [Lines]=0,[Count]=1
+	For /F %%d in ('Type "%~1"^|Find /v /c ""') Do Set [lines]=%%d
+	If ![Lines]! Geq 1000 If ![Lines]! Leq 9999 Set Bss=!Bs!!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 100 If ![Lines]! Leq 999 Set Bss=!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 10 If ![Lines]! Leq 99 Set Bss=!Bs!!Bs!
+	If ![Lines]! Geq 1 If ![Lines]! Leq 9 Set Bss=!Bs!
+	Set Bss=!Bss!!Bs!!Bs!
+	Call Lib\Status.bat "%~1"
+	:::::
+	For /F "Tokens=* Skip=1" %%z in ('Type "%~1"') Do (
+	Call :ChangeChr_ "%%z"
+	Set/a Y+=1
+
+	Set/a [Count]+=1
+	If ![Count]! Equ 1000 Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 100  Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 10  Set Bss=!Bss!!Bs!
+	<Nul Set/p =![Count]!/![Lines]!!Bss!
+	)
+	Set/a Map.X=!LongX!,Map.Y=23
+	For /l %%Y in (1,1,23) Do Set "Line[%%Y]=!Lm[%%Y]!"&Set Lm[%%Y]=
+	For %%a in (bg fg Count Tmp_ Y Head_Pic Chr) Do Set %%a=
+	Exit/b 0
+:GetLng
+	For /F "Tokens=* Skip=1" %%a in ('Type "%~1"') Do Set "String=%%a" & Goto :GLint
+	:GLint
+	Set LongX=0
+	:GetLng_
+	Set "String=!String:~17!"
+	Set/a LongX+=1
+	If Defined String Goto :GetLng_
+	Goto :Eof
+
+:ChangeChr_
+	Set "Tmp_=%~1"
+	Set/a X=0,_X=7,Count=0
+	:ChangeChrR_
+	:: title [%%a] - [%%b] - [%%c] - [%%d] - [%%e] - [!X!/!LongX! - !Y!/!LongY!]
+	For /F "Tokens=1-6 Delims=[;m" %%a in ("!Tmp_:~%Count%,17!") Do (
+	For %%# in (0.0 1.0 5.0) Do For /F "Tokens=1-2 Delims=." %%x in ("%%#") Do (
+	If %%a Equ %%x If %%y Equ 0 (
+	If %%c Equ 40 Set Bg=0
+	If %%c Equ 41 Set Bg=4
+	If %%c Equ 42 Set Bg=2
+	If %%c Equ 43 Set Bg=6
+	If %%c Equ 44 Set Bg=1
+	If %%c Equ 45 Set Bg=5
+	If %%c Equ 46 Set Bg=3
+	If %%c Equ 47 Set Bg=7
+	If %%d Equ 30 Set Fg=0
+	If %%d Equ 31 Set Fg=4
+	If %%d Equ 32 Set Fg=2
+	If %%d Equ 33 Set Fg=6
+	If %%d Equ 34 Set Fg=1
+	If %%d Equ 35 Set Fg=5
+	If %%d Equ 36 Set Fg=3
+	If %%d Equ 37 Set Fg=7
+	))
+	For %%# in (0.1 1.1) Do For /F "Tokens=1-2 Delims=." %%x in ("%%#") Do (
+	If %%a Equ %%x If %%b Equ %%y (
+	If %%c Equ 40 Set Bg=0
+	If %%c Equ 41 Set Bg=4
+	If %%c Equ 42 Set Bg=2
+	If %%c Equ 43 Set Bg=6
+	If %%c Equ 44 Set Bg=1
+	If %%c Equ 45 Set Bg=5
+	If %%c Equ 46 Set Bg=3
+	If %%c Equ 47 Set Bg=7
+	If %%d Equ 30 Set Fg=8
+	If %%d Equ 31 Set Fg=c
+	If %%d Equ 32 Set Fg=a
+	If %%d Equ 33 Set Fg=e
+	If %%d Equ 34 Set Fg=9
+	If %%d Equ 35 Set Fg=d
+	If %%d Equ 36 Set Fg=b
+	If %%d Equ 37 Set Fg=f
+	))
+	For %%# in (5.1 1.5) Do For /F "Tokens=1-2 Delims=." %%x in ("%%#") Do (
+	If %%a Equ %%x If %%b Equ %%y (
+	If %%c Equ 40 Set Bg=8
+	If %%c Equ 41 Set Bg=c
+	If %%c Equ 42 Set Bg=a
+	If %%c Equ 43 Set Bg=e
+	If %%c Equ 44 Set Bg=9
+	If %%c Equ 45 Set Bg=d
+	If %%c Equ 46 Set Bg=b
+	If %%c Equ 47 Set Bg=f
+	If %%d Equ 30 Set Fg=8
+	If %%d Equ 31 Set Fg=c
+	If %%d Equ 32 Set Fg=a
+	If %%d Equ 33 Set Fg=e
+	If %%d Equ 34 Set Fg=9
+	If %%d Equ 35 Set Fg=d
+	If %%d Equ 36 Set Fg=b
+	If %%d Equ 37 Set Fg=f
+	))
+	For %%# in (0.5 5.5) Do For /F "Tokens=1-2 Delims=." %%x in ("%%#") Do (
+	If %%a Equ %%x If %%b Equ %%y (
+	If %%c Equ 40 Set Bg=8
+	If %%c Equ 41 Set Bg=c
+	If %%c Equ 42 Set Bg=a
+	If %%c Equ 43 Set Bg=e
+	If %%c Equ 44 Set Bg=9
+	If %%c Equ 45 Set Bg=d
+	If %%c Equ 46 Set Bg=b
+	If %%c Equ 47 Set Bg=f
+	If %%d Equ 30 Set Fg=0
+	If %%d Equ 31 Set Fg=4
+	If %%d Equ 32 Set Fg=2
+	If %%d Equ 33 Set Fg=6
+	If %%d Equ 34 Set Fg=1
+	If %%d Equ 35 Set Fg=5
+	If %%d Equ 36 Set Fg=3
+	If %%d Equ 37 Set Fg=7
+	))
+
+	For /F "Tokens=1,2,* Skip=2" %%x in ('Find ">%%e<" "Lib\CharSet.db"') Do Set "Chr=%%y"
+	Set "Lm[!Y!]=!Lm[%Y%]:~0,%X%!!bg!!fg! !Chr! !Lm[%Y%]:~%_X%!"
+	Set/a Count+=17,X+=7,_X+=7
+	)
+	If "!Tmp_:~%Count%,17!" Neq "" Goto :ChangeChrR_
+	Goto :Eof

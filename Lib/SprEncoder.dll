@@ -1,0 +1,360 @@
+@Echo Off
+:	SprEncoder is part of Map Editor.
+:	
+:	Map Editor is free software: you can redistribute it and/or modify
+:	it under the terms of the GNU General Public License as published by
+:	the Free Software Foundation, either version 3 of the License, or
+:	(at your option) any later version.
+:	
+:	Map Editor is distributed in the hope that it will be useful,
+:	but WITHOUT ANY WARRANTY; without even the implied warranty of
+:	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:	GNU General Public License for more details.
+:	
+:	You should have received a copy of the GNU General Public License
+:	along with Map Editor.  If not, see <http://www.gnu.org/licenses/>.
+	SetLocal EnableExtensions EnableDelayedExpansion
+	:: Note: Do a () then redirect is more fast than redirect and concatenate
+	:: Note: is not possible put a null char with '>>' redirector
+	:: Load ChrTable
+	Set "T=!Tmp!\"
+	Call Lib\Status.bat "%~1" s
+	Rem Echo;&<Nul Set /p=Please wait while all chars are generated...
+	For /L %%c in (0x00,1,0xFF) Do (
+		Set Ct=%%c
+		If %%c Equ 0 Set Ct=00
+		If Not Exist "!Tmp!\%%c.chr" Call :GenChr !Ct!
+		If "!Ct!"=="00" Ren "!Tmp!\00.chr" "0.chr" 2>Nul
+	)
+	For /F "Tokens=1-2 Delims== " %%X in ('FindStr "^=" "%~0"') Do (
+		Set AChr[%%X]=%%Y
+	)
+	:: Type "%T%13.Chr"
+	:: For %%T in (
+	:: 	"+===============================+                       "
+	:: 	"ÝSpr Tool Encoder               Ý"
+	:: 	"ÝCoded By Honguito98            Ý"
+	:: 	"Ý Rev. 0.9  27-JUL-14 @ 9:23PM  Ý"
+	:: 	"+===============================+"
+	:: 	""
+	:: 	"Converts any .mpe file (Map Editor w/o anim. only)"
+	:: 	"to binary format for new Bg Sprite"
+	:: 	""
+	:: ) Do Echo;%%~T
+	:: Set /p File=File:
+	:: For /F "Skip=2 Tokens=3-4 Delims=xX " %%A in ('Find /i "SizeData:" !File!') Do (
+	:: 	Set /a "Map.X=%%A, Map.Y=%%B, Col=(%%A * 7) - 7"
+	:: )
+	Set /a "X=%3 - %2, Y=(%5 - %4) + 1, Col=((%3 - %2)* 7) - 7"
+	:: This set on 'save with transparency' option
+	Set AChr[FF]=0000
+	%== Start Of 'store binary data in 'Con' {stdout} ==%
+(
+	For %%T in (X;Y) Do (
+		Type "%T%!%%T!.Chr"
+		Type "%T%0.Chr"
+	)
+
+	Rem For /F "Skip=2 Delims=" %%D in (!File!) Do (
+	:: $4 $5 = Y to Y area
+	Set /a "Ys=%4, Ye=%5, Xs=%2 * 7, Xe=(%3 - %2) * 7"
+	For /L %%P in (!Ys!, 1, !Ye!) Do (
+		
+		For /F "Tokens=1-2" %%A in ("!Xs! !Xe!") Do For /F "Delims=" %%D in ("!Line[%%P]:~%%A,%%B!") Do (
+			Set "Tmp_=%%D"
+			For /L %%L in (0,7,!Col!) Do (
+				Set "Tmp__=!Tmp_:~%%L,7!"
+				Set /a "Cl=0x!Tmp__:~0,2!" & Set "Chr=!Tmp__:~4,2!"
+				%== Integer to Binary char convertion ==%
+				For %%C in (!Chr!) Do (
+					Set /a "Uc1=0x!AChr[%%C]:~0,2!, Uc2=0x!AChr[%%C]:~2,2!"
+					Rem Set /a "Uc1=0x00, Uc2=0x%%C"
+				)
+				Type "%T%!Uc2!.Chr" "%T%!Uc1!.Chr" "%T%!Cl!.Chr" "%T%0.Chr"
+			)
+		)
+	)
+) > "%~1" 2>Nul
+	EndLocal
+	Goto :Eof
+	
+	
+	:Genchr
+	REM This code creates one single byte file. Parameter: <int>0-255
+	REM Teamwork of carlos, penpen, aGerman, dbenham
+	REM Tested under Win2000, XP, Win7, Win8
+	Pushd !Cd!
+	Cd !Tmp!
+	set "options=/d compress=off /d reserveperdatablocksize=26"
+	If %~1 neq 26  (
+		type nul >t.tmp
+		makecab %options% /d reserveperfoldersize=%~1 t.tmp %~1.chr >nul
+		type %~1.chr | (
+			(for /l %%N in (1 1 38) do pause)>nul&findstr "^">t.tmp
+		)
+		>nul copy /y t.tmp /a %~1.chr /b
+		del t.tmp
+	) else (
+		copy /y nul + nul /a 26.chr /a >nul
+	)
+	Popd
+	goto :eof
+
+;Unicode To Ms-Dos Ascii By Honguito98
+;Ascii HEX Unicode HEX
+=00 0000 : null
+=01 263A : white smile
+=02 263B : black smile
+=03 2665 : heart
+=04 2666 : diammond
+=05 2663 : clover
+=06 2660 : spades
+=07 2022 : big dot
+=08 25D8 : negative box w/ circle
+=09 25CB : white circle
+=0A 25D9 : black circle
+=0B 2642 : sign man
+=0C 2640 : sign woman
+=0D 266A : quaver
+=0E 266B : tied eighth
+=0F 263C : sun
+=10 25C4 : left pointer
+=11 25BA : right pointer
+=12 2195 : down-up arrow
+=13 203C : double exclamation sign
+=14 0014 : ? device control 4
+=15 0015 : ? negative acknowledge
+=16 25AC : thin black bar
+=17 21A8 : down-up arrow with base
+=18 2191 : up arrow
+=19 2193 : down arrow
+=1A 2192 : right arrow
+=1B 2190 : left arrow
+=1C 221F : right angle
+=1D 2194 : left-right arrow
+=1E 25B2 : up pointer
+=1F 25BC : down pointer
+=20 0020
+=21 0021
+=22 0022
+=23 0023
+=24 0024
+=25 0025
+=26 0026
+=27 0027
+=28 0028
+=29 0029
+=2A 002A
+=2B 002B
+=2C 002C
+=2D 002D
+=2E 002E
+=2F 002F
+=30 0030
+=31 0031
+=32 0032
+=33 0033
+=34 0034
+=35 0035
+=36 0036
+=37 0037
+=38 0038
+=39 0039
+=3A 003A
+=3B 003B
+=3C 003C
+=3D 003D
+=3E 003E
+=3F 003F
+=40 0040
+=41 0041
+=42 0042
+=43 0043
+=44 0044
+=45 0045
+=46 0046
+=47 0047
+=48 0048
+=49 0049
+=4A 004A
+=4B 004B
+=4C 004C
+=4D 004D
+=4E 004E
+=4F 004F
+=50 0050
+=51 0051
+=52 0052
+=53 0053
+=54 0054
+=55 0055
+=56 0056
+=57 0057
+=58 0058
+=59 0059
+=5A 005A
+=5B 005B
+=5C 005C
+=5D 005D
+=5E 005E
+=5F 005F
+=60 0060
+=61 0061
+=62 0062
+=63 0063
+=64 0064
+=65 0065
+=66 0066
+=67 0067
+=68 0068
+=69 0069
+=6A 006A
+=6B 006B
+=6C 006C
+=6D 006D
+=6E 006E
+=6F 006F
+=70 0070
+=71 0071
+=72 0072
+=73 0073
+=74 0074
+=75 0075
+=76 0076
+=77 0077
+=78 0078
+=79 0079
+=7A 007A
+=7B 007B
+=7C 007C
+=7D 007D
+=7E 007E
+=7F 007F
+=80 00C7 : latin capital letter c with cedilla
+=81 00FC : latin small letter u with diaeresis
+=82 00E9 : latin small letter e with acute
+=83 00E2 : latin small letter a with circumflex
+=84 00E4 : latin small letter a with diaeresis
+=85 00E0 : latin small letter a with grave
+=86 00E5 : latin small letter a with ring above
+=87 00E7 : latin small letter c with cedilla
+=88 00EA : latin small letter e with circumflex
+=89 00EB : latin small letter e with diaeresis
+=8A 00E8 : latin small letter e with grave
+=8B 00EF : latin small letter i with diaeresis
+=8C 00EE : latin small letter i with circumflex
+=8D 00EC : latin small letter i with grave
+=8E 00C4 : latin capital letter a with diaeresis
+=8F 00C5 : latin capital letter a with ring above
+=90 00C9 : latin capital letter e with acute
+=91 00E6 : latin small ligature ae
+=92 00C6 : latin capital ligature ae
+=93 00F4 : latin small letter o with circumflex
+=94 00F6 : latin small letter o with diaeresis
+=95 00F2 : latin small letter o with grave
+=96 00FB : latin small letter u with circumflex
+=97 00F9 : latin small letter u with grave
+=98 00FF : latin small letter y with diaeresis
+=99 00D6 : latin capital letter o with diaeresis
+=9A 00DC : latin capital letter u with diaeresis
+=9B 00A2 : cent sign
+=9C 00A3 : pound sign
+=9D 00A5 : yen sign
+=9E 20A7 : peseta sign
+=9F 0192 : latin small letter f with hook
+=A0 00E1 : latin small letter a with acute
+=A1 00ED : latin small letter i with acute
+=A2 00F3 : latin small letter o with acute
+=A3 00FA : latin small letter u with acute
+=A4 00F1 : latin small letter n with tilde
+=A5 00D1 : latin capital letter n with tilde
+=A6 00AA : feminine ordinal indicator
+=A7 00BA : masculine ordinal indicator
+=A8 00BF : inverted question mark
+=A9 2310 : reversed not sign
+=AA 00AC : not sign
+=AB 00BD : vulgar fraction one half
+=AC 00BC : vulgar fraction one quarter
+=AD 00A1 : inverted exclamation mark
+=AE 00AB : left-pointing double angle quotation mark
+=AF 00BB : right-pointing double angle quotation mark
+=B0 2591 : light shade
+=B1 2592 : medium shade
+=B2 2593 : dark shade
+=B3 2502 : box drawings light vertical
+=B4 2524 : box drawings light vertical and left
+=B5 2561 : box drawings vertical single and left double
+=B6 2562 : box drawings vertical double and left single
+=B7 2556 : box drawings down double and left single
+=B8 2555 : box drawings down single and left double
+=B9 2563 : box drawings double vertical and left
+=BA 2551 : box drawings double vertical
+=BB 2557 : box drawings double down and left
+=BC 255D : box drawings double up and left
+=BD 255C : box drawings up double and left single
+=BE 255B : box drawings up single and left double
+=BF 2510 : box drawings light down and left
+=C0 2514 : box drawings light up and right
+=C1 2534 : box drawings light up and horizontal
+=C2 252C : box drawings light down and horizontal
+=C3 251C : box drawings light vertical and right
+=C4 2500 : box drawings light horizontal
+=C5 253C : box drawings light vertical and horizontal
+=C6 255E : box drawings vertical single and right double
+=C7 255F : box drawings vertical double and right single
+=C8 255A : box drawings double up and right
+=C9 2554 : box drawings double down and right
+=CA 2569 : box drawings double up and horizontal
+=CB 2566 : box drawings double down and horizontal
+=CC 2560 : box drawings double vertical and right
+=CD 2550 : box drawings double horizontal
+=CE 256C : box drawings double vertical and horizontal
+=CF 00A4 : -money sign-
+=D0 00F0 : box drawings up double and horizontal single
+=D1 2564 : box drawings down single and horizontal double
+=D2 2565 : box drawings down double and horizontal single
+=D3 2559 : box drawings up double and right single
+=D4 2558 : box drawings up single and right double
+=D5 2552 : box drawings down single and right double
+=D6 2553 : box drawings down double and right single
+=D7 256B : box drawings vertical double and horizontal single
+=D8 256A : box drawings vertical single and horizontal double
+=D9 2518 : box drawings light up and left
+=DA 250C : box drawings light down and right
+=DB 2588 : full block
+=DC 2584 : lower half block
+=DD 258C : left half block
+=DE 2590 : right half block
+=DF 2580 : upper half block
+=E0 03B1 : greek small letter alpha
+=E1 00DF : latin small letter sharp s
+=E2 0393 : greek capital letter gamma
+=E3 03C0 : greek small letter pi
+=E4 03A3 : greek capital letter sigma
+=E5 03C3 : greek small letter sigma
+=E6 00B5 : micro sign
+=E7 03C4 : greek small letter tau
+=E8 03A6 : greek capital letter phi
+=E9 0398 : greek capital letter theta
+=EA 03A9 : greek capital letter omega
+=EB 03B4 : greek small letter delta
+=EC 221E : infinity
+=ED 03C6 : greek small letter phi
+=EE 03B5 : greek small letter epsilon
+=EF 2229 : intersection
+=F0 00F0 : identical to
+=F1 00B1 : plus-minus sign
+=F2 2265 : greater-than or equal to
+=F3 2264 : less-than or equal to
+=F4 2320 : top half integral
+=F5 00FF : bottom half integral
+=F6 00F7 : division sign
+=F7 2248 : almost equal to
+=F8 00B0 : degree sign
+=F9 2219 : bullet operator
+=FA 00B7 : middle dot
+=FB 221A : square root
+=FC 207F : superscript latin small letter n
+=FD 00B2 : superscript two
+=FE 25A0 : black square
+=FF 00A0 : no-break space

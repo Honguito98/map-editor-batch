@@ -1,0 +1,69 @@
+:	BatToMpe.dll is part of Map Editor.
+:	
+:	Map Editor is free software: you can redistribute it and/or modify
+:	it under the terms of the GNU General Public License as published by
+:	the Free Software Foundation, either version 3 of the License, or
+:	(at your option) any later version.
+:	
+:	Map Editor is distributed in the hope that it will be useful,
+:	but WITHOUT ANY WARRANTY; without even the implied warranty of
+:	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:	GNU General Public License for more details.
+:	
+:	You should have received a copy of the GNU General Public License
+:	along with Map Editor.  If not, see <http://www.gnu.org/licenses/>.
+
+	:: BatToMpe Library - Developed By Honguito98 ::
+	::! This Cannot Run in mode Standalone !::
+	:: Usage: BatToMpe.dll FILE ::
+	:: Data are returned as variables called 'Line[#]' from 1 to ??? ::
+	:: This requires the: setlocal enabledelayedexpansion enableextensions ::
+
+	Set Head_bat=Created With Batch Paint
+	Find "!Head_Bat!" "%~1">Nul||Exit/b 2
+	Set Skip=4
+	Set mX=-13
+	Set mY=-3
+	For /l %%X in (1,1,67) Do Set "Tmp_=!Tmp_!00 \FF "
+	For /l %%Y In (1,1,23) Do Set "Lm[%%Y]=!Tmp_!"
+	Find "!Head_Bat! v 2" "%~1">Nul &&(
+		Set Skip=5
+		Set mX=-2
+		Set mY=
+	)
+	Set/a [Lines]=0,[Count]=8
+	For /F %%d in ('Type "%~1"^|Find /v /c ""') Do Set [lines]=%%d
+	If ![Lines]! Geq 1000 If ![Lines]! Leq 9999 Set Bss=!Bs!!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 100 If ![Lines]! Leq 999 Set Bss=!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 10 If ![Lines]! Leq 99 Set Bss=!Bs!!Bs!
+	If ![Lines]! Geq 1 If ![Lines]! Leq 9 Set Bss=!Bs!
+	Set Bss=!Bss!!Bs!!Bs!
+	Call Lib\Status.bat "%~1"
+	For /F "Useback Skip=5 Tokens=3-5 Delims=>&.: " %%a in ("%~1") Do (
+	If "%%a" Neq "2>&1" (
+	If /i "%%b" Neq "Debug" (
+	If /i "%%a" Neq "q" (
+	If /i "%%a" Neq "P" (
+	If /i "%%a" Neq "G" (
+	Set/a "Y=0x%%a/160!mY!,X=((0x%%a-(0x%%a/160*160))/2!mX!)*7"
+	Set/a _X=X+7
+	rem Echo;%%a :: !X!,!Y! - !_X! >>Tmp.txt
+
+	Rem === Start Of ChangeChr ===
+	For /F "Tokens=1,2,* Skip=1" %%x in ('Find ">%%~b<" "Lib\CharSet.db"') Do Set "Chr=%%y"
+	For /F "Tokens=1-3" %%X in ("!X! !_X! !Y!") Do (
+		Set "Lm[%%Z]=!Lm[%%Z]:~0,%%X!%%c !Chr! !Lm[%%Z]:~%%Y!"
+	)
+	Rem === End Of ChangeChr ===
+
+	)))))
+	Set/a [Count]+=1
+	If ![Count]! Equ 1000 Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 100  Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 10  Set Bss=!Bss!!Bs!
+	<Nul Set/p =![Count]!/![Lines]!!Bss!
+	)
+	Set/a Map.X=67,Map.Y=23
+	For /l %%Y in (1,1,23) Do Set "Line[%%Y]=!Lm[%%Y]!"&Set Lm[%%Y]=
+	For %%a in (X Y Head_Bat Chr Tmp_ mX mY) Do Set %%a=
+	Exit/b 0

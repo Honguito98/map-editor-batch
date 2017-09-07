@@ -1,0 +1,353 @@
+:    FileBrowser - A Tiny File Browser coded in Batch
+:    Copyright (C) 2013,2014  Honguito98
+:
+:    This program is free software: you can redistribute it and/or modify
+:    it under the terms of the GNU General Public License as published by
+:    the Free Software Foundation, either version 3 of the License, or
+:    (at your option) any later version.
+:
+:    This program is distributed in the hope that it will be useful,
+:    but WITHOUT ANY WARRANTY; without even the implied warranty of
+:    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:    GNU General Public License for more details.
+:
+:    You should have received a copy of the GNU General Public License
+:    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	:Non-Standalone version
+
+	Set "Home=!Cd!"
+	Set "$Tmp=!Tmp!\[$Tmp].bat"
+	Set "$$Tmp=!Tmp!\[$$Tmp].bat"
+	!Ui! Cursor 0
+	Set OnSel=
+	Set "CharNam=                     "
+	Set/a Pos.X=23,Pos.Y=3,_MaxView_=12,_MinView_=1
+	For /l %%Y in (1,1,17) Do Set ToFilt=!ToFilt!\n
+	For /l %%X in (1,1,29) Do Set ToFilt=!ToFilt!\00
+	::: Get Filtters from parameter :::
+	Set Count=0
+	For %%x in (%*) Do (
+	Set/a Count+=1
+	For /F "Tokens=1-2 Delims=|" %%a in ("%%~x") Do (
+		Set "FiDesc!Count!=%%a"
+		Set "Filter!Count!=%%b"
+	))
+	For /l %%a in (1,1,!Count!) Do Set "Filter%%a=!Filter%%a:.=*.!"
+	Set Extv=!FiDesc1!
+	Set Exts=!Filter1!
+	Set TotalF=!Count!
+	For %%a in (
+	"90 "
+	"$ !__Mode! File                                          $\n "
+	"70 "
+	"ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿\n"
+	"³/////////////////////////////////////////////////-³\n"
+	"ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄ´\n"
+   "$³        Name             ³   Date   ³ Type ³ Size ³\n$"
+	"ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄ´\n"
+	"³//////////////////////////////////////////////////-\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////°\n"
+	"³//////////////////////////////////////////////////<\n"
+	"ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ\n"
+	"$ Name $ f0 $                     $ 70 $  $ f0 $                    + $ 70 $ $\n"
+	"$                                                    $\n"
+	"$                             $ f0 $  !__Mode!  $ 70 $  $ f0 $ Cancel $ 70 $     $"
+	) Do Set Draw=!Draw!%%~a
+	Set Draw=!Draw:$="!
+	Set Draw=!Draw:Ú=\DA!
+	Set Draw=!Draw:Ä=\C4!
+	Set Draw=!Draw:¿=\BF!
+	Set Draw=!Draw:³=\B3!
+	Set Draw=!Draw:/=\FF!
+	Set Draw=!Draw:Ã=\C3!
+	Set Draw=!Draw:´=\B4!
+	Set Draw=!Draw:À=\C0!
+	Set Draw=!Draw:Ù=\D9!
+	Set Draw=!Draw:Â=\C2!
+	Set Draw=!Draw:Á=\C1!
+	Set Draw=!Draw:+=\1F!
+	Set Draw=!Draw:-=\18!
+	Set Draw=!Draw:°=\B0!
+	Set Draw=!Draw:^<=\19!
+	For %%b in (
+	"f8 "
+	"\DA\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\BF\n"
+	"\B3\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\18\n"
+	"\B3\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\B2\n"
+	"\B3\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\B2\n"
+	"\B3\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\B2\n"
+	"\B3\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\FF\19\n"
+	"\C0\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\C4\D9\n"
+	) Do Set "Draw_=!Draw_!%%~b"
+	!Ui! Print !Pos.Y! !Pos.X! !Draw!
+	Call :GetDir
+	Call :ShowDir
+	Call :GenPos
+	:Choose-File
+	For /F "Tokens=1-3" %%x in ('!Ui! Mouse') Do Set/a X=%%y,Y=%%x
+	Set/a _X=Pos.X+1,_Y=Pos.Y+6,__X=Pos.X+50,__Y=Pos.Y+17
+	If !X! Geq !_X! If !X! Leq !__X! If !Y! Geq !_Y! If !Y! Leq !__Y! (
+		!Ui! Print !NPos.Y! !NPos.X! 70 "!Names!"
+		Call !$Tmp! !X! !Y!
+
+If "!OnSel!" Equ "!Obj!" If "!Obj!" Neq "" (
+	:Accpet
+	Set OnSel=
+	Set/a _X=Pos.X+6,_Y=Pos.Y+20
+	If Defined NFile If /i "!__Mode!" Neq "Save" (
+	Call :Invchar NFile
+	If Not Exist "!__Cd__!!NFile!" (
+		!Ui! Print !_Y! !_X! 7c "The filename doesn't exist"
+		!Ui! Sleep 1000
+		!Ui! Print !_Y! !_X! 77 "The filename doesn't exist"
+		Goto :Choose-File
+	))
+	If Not Defined NFile If Not Defined Obj Goto :Choose-File
+	If Defined NFile Set "Obj=!NFile!"
+	If Not Defined NFile Call :Invchar Obj
+	Cd !Obj! >Nul 2>&1||(
+		If /i "!__Mode!" Equ "Open" (Goto :Open-File) Else (Goto :Save-File)
+	)
+	Goto :Cd
+)
+	
+	Set "OnSel=!Obj!"
+	Goto :Choose-File
+)
+	::Title !X!.!Y! !Z! - !Obj! - !NFile!
+	Set/a _X=Pos.X+50,_Y=Pos.Y+2
+	If !X! Equ !_X! If !Y! Equ !_Y! (
+		Cd ..
+		:cd
+		!Ui! Print !Pos.Y! !Pos.X! !Draw!
+		Set/a _MaxView_=12,_MinView_=1
+		For %%a in (GetDir ShowDir GenPos) Do Call :%%a
+		Goto :Choose-File
+	)
+	Set/a _X=Pos.X+51,_Y=Pos.Y+6
+	If !X! Equ !_X! If !Y! Equ !_Y! (
+	If !_MinView_! Gtr 1 (
+		Set/a _MinView_-=1,_MaxView_-=1
+		!Ui! Print !Pos.Y! !Pos.X! !Draw!
+		For %%a in (ShowDir GenPos) Do Call :%%a
+		Goto :Choose-File
+	))
+	
+	Set/a _X=Pos.X+51,_Y=Pos.Y+17
+	If !X! Equ !_X! If !Y! Equ !_Y! (
+	If !_MaxView_! Lss !Total! (
+		Set/a _MinView_+=1,_MaxView_+=1
+		!Ui! Print !Pos.Y! !Pos.X! !Draw!
+		For %%a in (ShowDir GenPos) Do Call :%%a
+	))
+	Set/a _X=Pos.X+29,_Y=Pos.Y+21,__X=Pos.X+36
+	If !Y! Equ !_Y! If !X! Geq !_X! If !X! Leq !__X! Goto :Accpet
+	
+	Set/a _X=Pos.X+39,_Y=Pos.Y+21,__X=Pos.X+46
+	If !Y! Equ !_Y! If !X! Geq !_X! If !X! Leq !__X! Goto :Cancel
+	
+	Set/a _X=Pos.X+6,_Y=Pos.Y+19,__X=Pos.X+26
+	If !Y! Equ !_Y! If !X! Geq !_X! If !X! Leq !__X! Goto :SetNameF
+
+	Set/a _X=Pos.X+29,_Y=Pos.Y+19,__X=Pos.X+50
+	If !Y! Equ !_Y! If !X! Geq !_X! If !X! Leq !__X! Goto :FilterSel
+	Goto :Choose-File
+
+:Open-File
+	Set "ObjFile=!__Cd__!!NFile!"
+	:Cancel_
+	Cd !Home!
+	For %%a in (
+	Obj Draw Names Dates Types Sizes _X _Y __X __Y Tmp_
+	_MinView_ _MaxView_ $$Tmp $Tmp NFile Exts Exts_ Extv Date_ Nam_
+	Ext_ Siz_ ToFilt CharNam OnSel Draw Draw_ Cd_ Count Sfit
+	) Do Set "%%a="
+	For %%t in (Pos.X Pos.Y Lst[ Filter FiDesc) Do (
+	For /F "Tokens=1 Delims==" %%b in ('Set^|Find /i "%%t"') Do Set "%%b="
+)
+	If "!__Mode!" Neq "" (Set __Mode=& Exit/b 0) Else (Exit/b 1)
+
+
+:Save-File
+	Set/a _X=Pos.X+11,_Y=Pos.Y+6
+	Call :InvChar NFile
+	Echo;!NFile!|Find ".">Nul||(
+	Echo;!NFile!|Find "!Exts:*.=.!">Nul||Set "NFile=!NFile!.!Exts:*.=!"
+	)
+	If Exist "!__Cd__!!NFile!" Goto :Warning-file
+	Goto :Open-File
+:Cancel
+	Set __Mode=
+	Goto :Cancel_
+
+:Warning-File
+	Set Tmp_=
+	For %%f in (
+   "$        Warning /\21\\        \n"
+	"                \EE\EE\EE        \n"
+	"  The filename does exist  \n"
+	"  Overwrite\3F               \n"
+	"                           \n"
+	"    [Yes]       [No]       \n$"
+	) Do Set Tmp_=!Tmp_!%%~f
+	!Ui! Print !_Y! !_X! 80 !Tmp_:$="!
+	:Warning-File_
+	For /F "Tokens=1-3" %%x in ('!Ui! Mouse') Do Set/a X=%%y,Y=%%x,Z=%%z
+	Set/a _X=Pos.X+15,_Y=Pos.Y+11,__X=Pos.X+19
+	If !X! Geq !_X! If !X! Leq !__X! if !Y! Equ !_Y! Goto :Open-File
+	Set/a _X=Pos.X+27,_Y=Pos.Y+11,__X=Pos.X+30
+	If !X! Geq !_X! If !X! Leq !__X! if !Y! Equ !_Y! Goto :Cd
+	Goto :Warning-File_
+
+:SetNameF
+	Set/a __X=_X+1
+	!Ui! Print !_Y! !_X! f0 "!Charnam!" 7c "\nPress Enter Key To Continue"
+	!Ui! Locate !_Y! !_X!
+	!Ui! Cursor 50
+	!Ui! Color f2
+	Set NFile=
+	Set/p NFile=
+	!Ui! Cursor 0
+	!Ui! Print !_Y! !_X! 77 "\nPress Enter Key To Continue"
+	!Ui! Color 07
+	Goto :Choose-File
+
+:FilterSel
+	Set/a MV=1,MX=5
+	:FilterSel_
+	Set/a _X=Pos.X+29,_Y=Pos.Y+12
+	!Ui! Print !_Y! !_X! !Draw_!
+	Set Tmp_=
+	For /l %%a in (!MV!,1,!MX!) Do Set Tmp_=!Tmp_!!FiDesc%%a!\n
+	Set/a _X=Pos.X+30,_Y=Pos.Y+13
+	!Ui! Print !_Y! !_X! f0 "!Tmp_!"
+	Call :GenPosF
+	For /F "Tokens=1-3" %%x in ('!Ui! Mouse') Do Set/a X=%%y,Y=%%x,Z=%%z
+	Set/a _X=Pos.X+29,_Y=Pos.Y+12,__X=Pos.X+50,__Y=Pos.Y+18
+	If !Y! Geq !_Y! If !Y! Leq !__Y! If !X! Geq !_X! If !X! Leq !__X! (
+		Call !$$Tmp! !X! !Y!
+		If !Errorlevel! Equ 255 Goto :Cd
+		Set/a _X=Pos.X+50,_Y=Pos.Y+17
+		If !X! Equ !_X! If !Y! Equ !_Y! If !MX! Lss !TotalF! Set/a MV+=1,MX+=1
+		Set/a _X=Pos.X+50,_Y=Pos.Y+13
+		If !X! Equ !_X! If !Y! Equ !_Y! If !MV! Gtr 1 Set/a MV-=1,MX-=1
+		Goto :FilterSel_
+	)
+
+	!Ui! Print !Pos.Y! !Pos.X! !Draw!
+	Set OnSel=
+	For %%a in (ShowDir GenPos) Do Call :%%a
+	Goto :Choose-File
+:InvChar
+	For %%a in (^< ^> ^| / \ ? ^") do Set "%1=!%1:%%a=!"
+	:DeleteWildcard
+	For /F "Tokens=1,* Delims=*" %%a in ("!%1!") do set "%1=%%a%%b"
+	Echo;"!%1!"|Find "*">Nul && Goto :DeleteWildCard
+	Goto :Eof
+:GetDir
+	Set Exts_=
+	Set NFile=
+	For /F "Tokens=1 Delims==" %%r in ('set^|Find /i "Lst["') Do Set "%%r="
+	Set/a Item=0
+	For %%# in ("" -) Do (
+	If "%%#" Equ "-" Set "Exts_=!Exts!"
+	For /F "Tokens=* Delims=" %%A in ('Dir "!__cd__!"!Exts_! /a:%%~#d-h-s /b 2^>nul') Do (
+		Set/a Item+=1
+		Set "Date_=%%~tA" & Set "Ext_=%%~xA"
+		Set "Nam_=%%~nA"  & Set "Siz_=%%~zA"
+		For %%z in (Date_ Siz_) Do If Not Defined %%z Set %%z=Unknow
+		If [%%~#]==[] (
+			Set "Nam_=!Nam_!!Ext_!"
+			Set Ext_=\20DIR
+			Set "Lst[!Item!]=\04<"!Nam_!"<!Date_:~0,10!<!Ext_:~0,6!<!Siz_:~0,6!"
+		) Else (
+			If Not Defined Ext_ Set Ext_=\20?
+			If Not Defined Nam_ Set "Nam_=|"
+			Set "Lst[!Item!]=\05<"!Nam_!"<!Date_:~0,10!<!Ext_:~0,6!<!Siz_:~0,6!"
+		)
+))
+	Set Total=!Item!
+	For %%a in (Item Date_ Ext_ Nam_ Obj) Do Set %%a=
+	Goto :Eof
+
+:ShowDir
+	For %%a in (Names Dates Types Sizes Nam_ Siz_) Do Set %%a=
+	Set/a CPos.Y=Pos.Y+2,CPos.X=Pos.X+1
+	Set/a NPos.Y=Pos.Y+6,NPos.X=Pos.X+1
+	Set/a DPos.Y=Pos.Y+6,DPos.X=Pos.X+27
+	Set/a TPos.Y=Pos.Y+6,TPos.X=Pos.X+38
+	Set/a SPos.Y=Pos.Y+6,SPos.X=Pos.X+45
+	For /l %%# in (!_MinView_!,1,!_MaxView_!) Do (
+	For /F "Tokens=1-5 Delims=<" %%a in ("!Lst[%%#]!") Do (
+		Set "Nam_=%%~b"
+		Set "Nam_=!Nam_:~0,23!"
+		Set "Names=!Names!%%~a\20!Nam_!\n"
+		Set "Dates=!Dates!%%~c\n"
+		Set "Types=!Types!%%~d\n"
+		Set "Sizes=!Sizes!%%~e\n"
+	))
+	Set "Cd_=!Cd:\=\\!"
+	If Defined Names Set "Names=!Names:|=\20!"
+	!Ui! Print !CPos.Y! !CPos.X! 74 "...!Cd_:~-47!" f6 "!ToFilt!!Extv!"
+	!Ui! Print !NPos.Y! !NPos.X! 70 "!Names!"
+	!Ui! Print !DPos.Y! !DPos.X! 70 "!Dates!"
+	!Ui! Print !TPos.Y! !TPos.X! 70 "!Types!"
+	!Ui! Print !SPos.Y! !SPos.X! 70 "!Sizes!"
+	Goto :Eof
+:GenPos
+	Set/a XPos.X=4+Pos.X-1,YPos.Y=7+Pos.Y-1,X_Pos.X=50+Pos.X-1
+	Set/a _X=Pos.X+6+1,_Y=Pos.Y+19
+	Echo.>!$Tmp!
+	For /l %%y in (!_MinView_!,1,!_MaxView_!) Do (
+		(
+		Echo If %%1 Geq !XPos.X! If %%1 Leq !X_Pos.X! If %%2 Equ !YPos.Y! ^(
+		Echo If Defined Lst[%%y] (
+		Echo Call :GetName Lst[%%y]
+		Echo !Ui! Print !YPos.Y! !XPos.X! 17 ^^!_Obj_:~0,24^^!
+		Echo Set NFile=^^!Obj^^!
+		Echo !Ui! Print !_Y! !_X! ff "^!Charnam:~1^!"
+		Echo !Ui! Print !_Y! !_X! f2 "^!Obj:~0,20^!"
+		Echo Exit/b 0
+		Echo ^)^)
+		)>>!$Tmp!
+		Set/a YPos.Y+=1
+	)
+	(
+	Echo Set Obj=
+	Echo Exit/b 1
+	Echo :GetName
+	Echo For /F "Tokens=2,4 Delims=<" %%%%a in ("^!%%1^!"^) Do Set "Obj=%%%%~a%%%%b"^&Set _Obj_=%%%%a
+	Echo Set Obj=^^!Obj:\20DIR=^^!
+	Echo Set "Obj=^!Obj:^|=^!"
+	Echo Set "_Obj_=^!_Obj_:^|=\20^!"
+	Echo Exit/b 0
+	)>>!$Tmp!
+	Goto :Eof
+
+:GenPosF
+	Set/a XPos.X=31+Pos.X-1,YPos.Y=14+Pos.Y-1,X_Pos.X=49+Pos.X-1
+	Echo.>!$$Tmp!
+	For /l %%y in (!MV!,1,!MX!) Do (
+		(
+		Echo If %%1 Geq !XPos.X! If %%1 Leq !X_Pos.X! If %%2 Equ !YPos.Y! ^(
+		Echo If Defined FiDesc%%y (
+		Echo !Ui! Print !YPos.Y! !XPos.X! 80 "!FiDesc%%y!"
+		Echo Set Extv=^^!FiDesc%%y^^!
+		Echo Set Exts=^^!Filter%%y^^!
+		Echo Exit/b 255
+		Echo ^)^)
+		)>>!$$Tmp!
+		Set/a YPos.Y+=1
+	)
+		(Echo.Exit/b 2)>>!$$Tmp!
+		Goto :Eof

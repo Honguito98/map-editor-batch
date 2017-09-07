@@ -1,0 +1,93 @@
+:	MpeToPic.dll is part of Map Editor.
+:
+:	Map Editor is free software: you can redistribute it and/or modify
+:	it under the terms of the GNU General Public License as published by
+:	the Free Software Foundation, either version 3 of the License, or
+:	(at your option) any later version.
+:
+:	Map Editor is distributed in the hope that it will be useful,
+:	but WITHOUT ANY WARRANTY; without even the implied warranty of
+:	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:	GNU General Public License for more details.
+:
+:	You should have received a copy of the GNU General Public License
+:	along with Map Editor.  If not, see <http://www.gnu.org/licenses/>.
+
+	:: MpeToPic Library - Developed By Honguito98 ::
+	::! This Cannot Run in mode Standalone !::
+	:: Usage: MpeToPic.dll OUTFILE X1,X2 Y1,Y2::
+	:: This requires the: setlocal enabledelayedexpansion enableextensions ::
+	:: std sze: X=68,Y=20
+	Set "Out=%~1"
+	Set/a "X1=%2*7,X2=(%3-%2)*7,Y1=%4,Y2=%5-1" 2>Nul
+	Del "!Out!" >Nul 2>&1
+	::::
+	Set/a [Lines]=!Y2!-!Y1!,[Count]=0
+	If ![Lines]! Geq 1000 If ![Lines]! Leq 9999 Set Bss=!Bs!!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 100 If ![Lines]! Leq 999 Set Bss=!Bs!!Bs!!Bs!
+	If ![Lines]! Geq 10 If ![Lines]! Leq 99 Set Bss=!Bs!!Bs!
+	If ![Lines]! Geq 1 If ![Lines]! Leq 9 Set Bss=!Bs!
+	Set Bss=!Bss!!Bs!!Bs!
+	Call Lib\Status.bat "%~1" l
+	::::
+	Echo;Pic Editor, Developed By Honguito98, 2013 - ANSI Color Sequences File> "!Out!"
+	(For /L %%# in (!Y1!,1,!Y2!) Do Call :ChgChr_ %%#) 4>> "!Out!"
+	Exit/b 0
+
+:ChgChr_
+	Set Count=0
+	Set "Tmp_=!Line[%1]:~%X1%,%X2%!"
+	:::::
+	If ![Count]! Equ 1000 Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 100  Set Bss=!Bss!!Bs!
+	If ![Count]! Equ 10  Set Bss=!Bss!!Bs!
+	<Nul Set/p =![Count]!/![Lines]!!Bss!
+	Set/a [Count]+=1
+	::::
+	:ChgChr__
+	For /F "Tokens=1-2" %%x in ("!Tmp_:~%Count%,7!") Do (
+	Set C=%%x
+	If "!C:~0,1!" Equ "0" Set/a Bg=40,Bl=0
+	If "!C:~0,1!" Equ "1" Set/a Bg=44,Bl=0
+	If "!C:~0,1!" Equ "2" Set/a Bg=42,Bl=0
+	If "!C:~0,1!" Equ "3" Set/a Bg=46,Bl=0
+	If "!C:~0,1!" Equ "4" Set/a Bg=41,Bl=0
+	If "!C:~0,1!" Equ "5" Set/a Bg=45,Bl=0
+	If "!C:~0,1!" Equ "6" Set/a Bg=43,Bl=0
+	If "!C:~0,1!" Equ "7" Set/a Bg=47,Bl=0
+	If    "!C:~0,1!" Equ "8" Set/a Bg=40,Bl=1
+	If    "!C:~0,1!" Equ "9" Set/a Bg=44,Bl=1
+	If /i "!C:~0,1!" Equ "A" Set/a Bg=42,Bl=1
+	If /i "!C:~0,1!" Equ "B" Set/a Bg=46,Bl=1
+	If /i "!C:~0,1!" Equ "C" Set/a Bg=41,Bl=1
+	If /i "!C:~0,1!" Equ "D" Set/a Bg=45,Bl=1
+	If /i "!C:~0,1!" Equ "E" Set/a Bg=43,Bl=1
+	If /i "!C:~0,1!" Equ "F" Set/a Bg=47,Bl=1
+
+
+	If "!C:~1,1!" Equ "0" Set/a Fg=30,Fl=0
+	If "!C:~1,1!" Equ "1" Set/a Fg=34,Fl=0
+	If "!C:~1,1!" Equ "2" Set/a Fg=32,Fl=0
+	If "!C:~1,1!" Equ "3" Set/a Fg=36,Fl=0
+	If "!C:~1,1!" Equ "4" Set/a Fg=31,Fl=0
+	If "!C:~1,1!" Equ "5" Set/a Fg=35,Fl=0
+	If "!C:~1,1!" Equ "6" Set/a Fg=33,Fl=0
+	If "!C:~1,1!" Equ "7" Set/a Fg=37,Fl=0
+	If    "!C:~1,1!" Equ "8" Set/a Fg=30,Fl=1
+	If    "!C:~1,1!" Equ "9" Set/a Fg=34,Fl=1
+	If /i "!C:~1,1!" Equ "A" Set/a Fg=32,Fl=1
+	If /i "!C:~1,1!" Equ "B" Set/a Fg=36,Fl=1
+	If /i "!C:~1,1!" Equ "C" Set/a Fg=31,Fl=1
+	If /i "!C:~1,1!" Equ "D" Set/a Fg=35,Fl=1
+	If /i "!C:~1,1!" Equ "E" Set/a Fg=33,Fl=1
+	If /i "!C:~1,1!" Equ "F" Set/a Fg=37,Fl=1
+	For /F "Tokens=2,* Skip=1" %%a in ('Find /i "%%y" Lib\CharSet.db') Do Set "Chr=%%b"
+	If !Bl! Equ 1 If !Fl! Equ 1 Set Bl=5
+)
+	If "!Tmp_:~%Count%,7!" Neq "" (
+		<Nul Set/p=[!Bl!;!Fl!;!Bg!;!Fg!m!Chr:~1,1![;m>&4
+		Set/a Count+=7
+		Goto :ChgChr__
+	)
+	Echo.>&4
+	Goto :Eof

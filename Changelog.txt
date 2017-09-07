@@ -1,0 +1,34 @@
+-------------------------
+v6.2-PreRelease
+04-Jul-14
+* More speed improvents, some bug fixes
+* Added 'undo-redo' functions (only 
+   available with Ctrl+Z and Ctrl+Y).
+
+* Added support for keyboard keys and
+  mouse at once.
+
+* Added support for load and save custom
+  pencil palette.
+
+* Disabled close button for avoid errors
+  with fn.dll mouse (bg.exe), now you need
+  close the program from the 'X' on the Text
+  User Interface.
+
+-------------------------
+v6.0
+23-Jul-14
+* Changed skin
+* added selectable pencil palette.
+* Speed improvents, changed mouse routine.
+* Added .spr format support for encoding and
+  decoding
+-------------------------
+v2.6
+10-Feb-14
+Bug fixes, more options
+-------------------------
+v2.3
+08-Jan-14
+Bug fixes, first version
